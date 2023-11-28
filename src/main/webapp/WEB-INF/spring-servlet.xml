@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/mvc
+        http://www.springframework.org/schema/mvc/mvc-context.xsd
+        http://www.springframework.org/schema/tx
+        http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+    <context:component-scan base-package="com.ud.UrlShortenerSpringMVC"/>
+    <tx:annotation-driven/>
+
+<!--    internal resource view resolver -->
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver" id="internalResourceViewResolver" name="internalResourceViewResolver">
+        <property name="prefix" value="/WEB-INF/view/"/>
+        <property name="suffix" value=".jsp"/>
+    </bean>
+
+<!--    hibernate template -->
+    <bean class="org.springframework.orm.hibernate5.HibernateTemplate" name="hibernateTemplate" id="hibernateTemplate">
+        <property name="sessionFactory" ref="localSessionFactoryBean"/>
+    </bean>
+
+<!--    session factory -->
+    <bean class="org.springframework.orm.hibernate5.LocalSessionFactoryBean" id="localSessionFactoryBean" name="localSessionFactoryBean">
+        <property name="packagesToScan" value="com.ud.UrlShortenerSpringMVC"/>
+        <property name="dataSource" ref="driverManagerDataSource"/>
+        <property name="hibernateProperties">
+            <props>
+                <prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+                <prop key="hibernate.show_sql">true</prop>
+                <prop key="hibernate.format_sql">true</prop>
+                <prop key="hibernate.hbm2ddl.auto">update</prop>
+            </props>
+        </property>
+    </bean>
+
+<!--    datasource -->
+    <bean class="org.springframework.jdbc.datasource.DriverManagerDataSource" name="driverManagerDataSource" id="driverManagerDataSource">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+        <property name="url" value="jdbc:mysql://localhost:3306/temp"/>
+        <property name="username" value="root"/>
+        <property name="password" value=""/>
+    </bean>
+
+<!--    transaction manager -->
+    <bean class="org.springframework.orm.hibernate5.HibernateTransactionManager" id="transactionManager" name="transactionManager">
+        <property name="sessionFactory" ref="localSessionFactoryBean"/>
+        <property name="dataSource" ref="driverManagerDataSource"/>
+    </bean>
+
+    <bean class="org.springframework.jdbc.core.JdbcTemplate" id="jdbcTemplate" name="jdbcTemplate">
+        <property name="dataSource" ref="driverManagerDataSource"/>
+    </bean>
+
+</beans>
