@@ -103,16 +103,22 @@ public class FormController {
             ){
         UserDao sessionUser = (UserDao) httpSession.getAttribute("user");
 
-        {
+        if (shortUrlService.shortUrlWithUserIdAndLongUrl(sessionUser.getId(),shortUrl.getLongUrl())){
+            httpSession.setAttribute("type","Error");
+            httpSession.setAttribute("message","You already shorted this url in past");
+            redirectView.setUrl(httpServletRequest.getContextPath()+"/error");
+        }else{
             String shortCode = Constants.shortCodeGenerator();
             while (shortUrlService.shortUrlWithShortCode(shortCode)){
                 shortCode = Constants.shortCodeGenerator();
             }
             shortUrl.setShortCode(shortCode);
+
+            shortUrl.setUserUserId(sessionUser.getId());
+            shortUrlService.save(shortUrl);
+            redirectView.setUrl(httpServletRequest.getContextPath()+"/dashboard");
         }
-        shortUrl.setUserUserId(sessionUser.getId());
-        shortUrlService.save(shortUrl);
-        redirectView.setUrl(httpServletRequest.getContextPath()+"/dashboard");
+
         return redirectView;
     }
 }
