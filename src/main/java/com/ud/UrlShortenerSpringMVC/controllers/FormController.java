@@ -9,11 +9,14 @@ import com.ud.UrlShortenerSpringMVC.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.view.RedirectView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.io.PrintWriter;
 
 @Controller
 public class FormController {
@@ -100,7 +103,13 @@ public class FormController {
             ){
         UserDao sessionUser = (UserDao) httpSession.getAttribute("user");
 
-        shortUrl.setShortCode(Constants.shortCodeGenerator());
+        {
+            String shortCode = Constants.shortCodeGenerator();
+            while (shortUrlService.shortUrlWithShortCode(shortCode)){
+                shortCode = Constants.shortCodeGenerator();
+            }
+            shortUrl.setShortCode(shortCode);
+        }
         shortUrl.setUserUserId(sessionUser.getId());
         shortUrlService.save(shortUrl);
         redirectView.setUrl(httpServletRequest.getContextPath()+"/dashboard");

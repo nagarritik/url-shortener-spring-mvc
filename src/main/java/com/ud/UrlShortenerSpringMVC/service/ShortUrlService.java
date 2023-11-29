@@ -45,4 +45,8 @@ public class ShortUrlService {
         List<ShortUrl> shortUrlList = getAllShortUrl();
         return shortUrlList.stream().filter(e->e.getUserUserId()==userId).toList();
     }
+
+    public boolean shortUrlWithShortCode(String shortCode){
+        return !getAllShortUrl().stream().filter(e-> Objects.equals(e.getShortCode(), shortCode)).toList().isEmpty();
+    }
 }
